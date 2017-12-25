@@ -15,7 +15,10 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0"
+        "php": ">=7.1.0",
+        "gap/dto": "^1.0",
+        "gap/database": "^1.0",
+        "gap/open-dto": "^1.0"
     },
     "autoload": {
         "psr-4": {
