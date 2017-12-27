@@ -31,6 +31,10 @@ class UserRepo extends RepoBase
             ->where('username', '=', $username)
             ->fetchObj();
 
+        if (empty($obj)) {
+            throw new \Exception('cannot find ' . $username);
+        }
+
         if (intval($obj->isActive) === 0) {
             throw new \Exception('user not ative');
         }

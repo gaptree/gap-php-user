@@ -1,3 +1,7 @@
+# Readme
+
+The fastest way to create user
+
 ## Database
 ```sql
 create database `tec-article`;
@@ -21,6 +25,7 @@ CREATE TABLE `user` (
 
 
 ## Example
+create user
 ```php
 <?php
 use Gap\User\UserAdapter;
@@ -29,4 +34,68 @@ $userAdapter = new UserAdapter($this->app->get('dmg'));
 $username = 'admin';
 $password = 'adminpass';
 $userAdapter->create($username, $password);
+```
+
+login
+```php
+<?php
+namespace Tec\Article\User\Ui;
+
+use Gap\Http\Response;
+use Gap\Http\RedirectResponse;
+use Gap\Http\ResponseInterface;
+use Gap\User\UserAdapter;
+
+class LoginByUsernameUi extends UiBase
+{
+    public function show(): ResponseInterface
+    {
+        $session = $this->app->get('session');
+        $loginTargetUrl = $this->request->query->get('target');
+
+        if (empty($session->get('user'))) {
+            if ($loginTargetUrl) {
+                $session->set('loginTargetUrl', $loginTargetUrl);
+            }
+
+            return $this->view('page/user/loginByUsername');
+        }
+
+        return new RedirectResponse($this->getLoginTargetUrl($loginTargetUrl));
+    }
+
+    public function post(): ResponseInterface
+    {
+        $username = $this->request->request->get('username');
+        $password = $this->request->request->get('password');
+
+        $userAdapter = new UserAdapter($this->app->get('dmg'));
+
+        try {
+            $userAdapter->verify($username, $password);
+            $user = $userAdapter->fetch(['username' => $username]);
+
+            $session = $this->app->get('session');
+            $session->set('user', $user);
+
+            return new RedirectResponse($this->getLoginTargetUrl());
+        } catch (\Exception $e) {
+            $response = new Response($e->getMessage());
+            $response->setStatusCode(500);
+            return $response;
+        }
+        return new Response('login by username');
+    }
+
+    protected function getLoginTargetUrl(?string $targetUrl = ''): string
+    {
+        if ($targetUrl) {
+            return $targetUrl;
+        }
+
+        $homeUrl = $this->app->get('routeUrlBuilder')->routeGet('home');
+        $loginTargetUrl = $this->app->get('session')->get('loginTargetUrl', $homeUrl);
+        return $loginTargetUrl;
+    }
+}
 ```
