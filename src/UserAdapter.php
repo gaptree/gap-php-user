@@ -15,11 +15,16 @@ class UserAdapter
         $this->dmg = $dmg;
     }
 
-    public function create(string $username, string $password): void
+    public function reg(string $username, string $password): void
     {
         $passhash = password_hash($password, PASSWORD_DEFAULT);
 
-        $this->getUserRepo()->create($username, $passhash);
+        $this->getUserRepo()->reg($username, $passhash);
+    }
+
+    public function create(UserDto $user): void
+    {
+        $this->getUserRepo()->create($user);
     }
 
     public function verify(string $username, string $password): void
