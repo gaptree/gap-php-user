@@ -139,10 +139,11 @@ class UserRepo extends RepoBase
     {
         $obj = $this->cnn->select($col)
             ->from($table)
-            ->where($col, '=', $val);
+            ->where($col, '=', $val)
+            ->fetchObj();
 
         if ($obj) {
-            throw new \Exception("$col already exists in $table");
+            throw new \Exception("$col '$val' already exists in $table");
         }
     }
 }
