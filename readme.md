@@ -2,25 +2,8 @@
 
 The fastest way to create user
 
-## Change log
-
-### 1.0.4
-
-#### Changed
-- Fix fatal error in assert not exists
-
-
-### 1.0.3
-
-#### Changed
-1. remove cols username, passhash from table user
-2. create table `passport`
-3. remove function UserAdapter::create(string $username, string $password): void
-4. create function UserAdapter::reg(string $username, string $password): void
-5. create function UserAdapter::create(UserDto $user): void
-
-
 ## Database
+
 ```sql
 create database `tec-article`;
 grant all privileges on `tec-article`.* to 'tec'@'127.0.0.1' identified by 'pass'
