@@ -2,17 +2,24 @@
 namespace Gap\User;
 
 use Gap\Database\DatabaseManager;
-use Gap\Open\Dto\UserDto;
 use Gap\User\Repo\UserRepo;
+
+use Gap\Open\Dto\UserDto;
+use Gap\Open\Dto\AccessTokenDto;
+use Gap\Open\Contract\Repo\CreateAccessTokenRepoInterface;
 
 class UserAdapter
 {
     protected $dmg;
     protected $userRepo;
+    protected $createAccessToken;
 
-    public function __construct(DatabaseManager $dmg)
-    {
+    public function __construct(
+        DatabaseManager $dmg,
+        ?CreateAccessTokenRepoInterface $createAccessToken = null
+    ) {
         $this->dmg = $dmg;
+        $this->createAccessToken = $createAccessToken;
     }
 
     public function reg(string $username, string $password): void
@@ -50,6 +57,35 @@ class UserAdapter
         $this->getUserRepo()->trackLogin($userId);
     }
 
+    public function accessToken(array $params): AccessTokenDto
+    {
+        if (!$this->createAccessToken) {
+            throw new \Exception('Cannot find "Create access token repo"');
+        }
+
+        $appId = $params['appId'] ?? '';
+        $userId = $params['userId'] ?? '';
+        $ttl = $params['ttl'] ?? new \DateInterval('PT1H');
+
+        $dateFormat = 'Y-m-d H:i:s';
+
+        $created = new \DateTime();
+        $expired = new \DateTime();
+        $expired->add($ttl);
+        $scope = $params['scope'] ?? '';
+
+        $accessToken = new AccessTokenDto([
+            'token' => $this->randomCode(),
+            'appId' => $appId,
+            'userId' => $userId,
+            'scope' => $scope,
+            'created' => $created->format($dateFormat),
+            'expired' => $expired->format($dateFormat)
+        ]);
+        $this->createAccessToken->create($accessToken);
+        return $accessToken;
+    }
+
     protected function getUserRepo(): UserRepo
     {
         if ($this->userRepo) {
@@ -58,5 +94,10 @@ class UserAdapter
 
         $this->userRepo = new UserRepo($this->dmg);
         return $this->userRepo;
+    }
+
+    protected function randomCode(): string
+    {
+        return base64_encode(random_bytes(32));
     }
 }

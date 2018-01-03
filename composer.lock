@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "c6f48fbde14b41bfca807f11a124ccc4",
+    "content-hash": "aa7219706f7071b6933dba1911967b3a",
     "packages": [
         {
             "name": "gap/database",
@@ -71,6 +71,42 @@
                 "gap"
             ],
             "time": "2017-12-25T09:34:39+00:00"
+        },
+        {
+            "name": "gap/open-contract",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://project.tecposter.cn/diffusion/71/gap-php-open-contract.git",
+                "reference": "ebae2c7bdc2ab4e3d0f3161181f76d562b2e11ac"
+            },
+            "require": {
+                "gap/open-dto": "^1.0",
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gap\\Open\\Contract\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "zhanjh",
+                    "email": "zhanjh@126.com"
+                }
+            ],
+            "description": "Gap Open Contract",
+            "homepage": "https://project.tecposter.cn/diffusion/71/",
+            "keywords": [
+                "gap",
+                "oauth2"
+            ],
+            "time": "2017-12-17T12:49:35+00:00"
         },
         {
             "name": "gap/open-dto",
