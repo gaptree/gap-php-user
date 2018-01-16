@@ -5,8 +5,8 @@ use Gap\Open\Dto\UserDto;
 
 class UserRepo extends RepoBase
 {
-    protected $userTable = 'user';
-    protected $passportTable = 'passport';
+    protected $userTable = 'open_user';
+    protected $passportTable = 'user_passport';
 
     public function reg(string $username, string $passhash): void
     {
