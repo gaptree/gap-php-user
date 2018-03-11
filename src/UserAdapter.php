@@ -1,7 +1,7 @@
 <?php
 namespace Gap\User;
 
-use Gap\Database\DatabaseManager;
+use Gap\Db\DbManagerInterface;
 use Gap\User\Repo\UserRepo;
 
 use Gap\Open\Dto\UserDto;
@@ -15,7 +15,7 @@ class UserAdapter
     protected $createAccessToken;
 
     public function __construct(
-        DatabaseManager $dmg,
+        DbManagerInterface $dmg,
         ?CreateAccessTokenRepoInterface $createAccessToken = null
     ) {
         $this->dmg = $dmg;

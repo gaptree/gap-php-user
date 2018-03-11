@@ -1,7 +1,7 @@
 <?php
 namespace Gap\User\Repo;
 
-use Gap\Database\DatabaseManager;
+use Gap\Db\DbManagerInterface;
 
 abstract class RepoBase
 {
@@ -9,7 +9,7 @@ abstract class RepoBase
     protected $cnn;
     protected $cnnName = 'default';
 
-    public function __construct(DatabaseManager $dmg)
+    public function __construct(DbManagerInterface $dmg)
     {
         $this->dmg = $dmg;
 

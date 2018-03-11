@@ -4,23 +4,36 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa7219706f7071b6933dba1911967b3a",
+    "content-hash": "5c396142d98a7fd52fc98e5445d7acfa",
     "packages": [
         {
-            "name": "gap/database",
-            "version": "1.0.1",
+            "name": "gap/db",
+            "version": "v1.0.5",
             "source": {
                 "type": "git",
-                "url": "https://project.tecposter.cn/diffusion/52/gap-php-database.git",
-                "reference": "6068dce0a45ce46a224661d816853b272a77eb38"
+                "url": "https://github.com/gaptree/gap-php-db.git",
+                "reference": "bda92ed51bbdbfd56937bcabd13bd7b525d32d86"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/gaptree/gap-php-db/bda92ed51bbdbfd56937bcabd13bd7b525d32d86.zip",
+                "reference": "bda92ed51bbdbfd56937bcabd13bd7b525d32d86",
+                "shasum": ""
             },
             "require": {
+                "gap/dto": "^1.0",
                 "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "phpmd/phpmd": "^2.6",
+                "phpstan/phpstan": "^0.9.2",
+                "phpunit/phpunit": "^7.0",
+                "squizlabs/php_codesniffer": "^3.2"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Gap\\Database\\": "src"
+                    "Gap\\Db\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -31,19 +44,19 @@
                 }
             ],
             "description": "Gap Database",
-            "homepage": "https://project.tecposter.cn/diffusion/52/",
+            "homepage": "https://github.com/gaptree/gap-php-db",
             "keywords": [
                 "gap"
             ],
-            "time": "2017-12-11T10:10:34+00:00"
+            "time": "2018-03-11T13:45:45+00:00"
         },
         {
             "name": "gap/dto",
-            "version": "1.0.0",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://project.tecposter.cn/diffusion/75/gap-php-dto.git",
-                "reference": "b52e3e03fc221f4f68d619a6840eafc632d7a61b"
+                "reference": "8024f1d8274cdf38ec2d49243ddd0ad00c7a8a8a"
             },
             "require": {
                 "php": ">=7.1.0"
@@ -70,7 +83,7 @@
                 "dto",
                 "gap"
             ],
-            "time": "2017-12-25T09:34:39+00:00"
+            "time": "2018-02-24T08:30:18+00:00"
         },
         {
             "name": "gap/open-contract",

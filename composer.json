@@ -7,7 +7,7 @@
         "gap",
         "user"
     ],
-    "homepage": "https://project.tecposter.cn/diffusion/74/",
+    "homepage": "https://github.com/gaptree/gap-php-user",
     "authors": [
         {
             "name": "zhanjh",
@@ -17,7 +17,7 @@
     "require": {
         "php": ">=7.1.0",
         "gap/dto": "^1.0",
-        "gap/database": "^1.0",
+        "gap/db": "^1.0",
         "gap/open-dto": "^1.0",
         "gap/open-contract": "^1.0"
     },

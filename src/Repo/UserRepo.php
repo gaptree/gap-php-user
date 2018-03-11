@@ -18,23 +18,25 @@ class UserRepo extends RepoBase
 
         $this->assertNotExists($this->passportTable, 'username', $username);
 
-        $this->cnn->beginTransaction();
+        $this->cnn->trans()->begin();
         try {
             $this->create($user);
             if (empty($user->userId)) {
                 throw new \Exception('userId cannot be empty');
             }
             $this->cnn->insert($this->passportTable)
-                ->value('userId', $user->userId)
-                ->value('username', $username)
-                ->value('passhash', $passhash)
-                ->value('created', date('Y-m-d H:i:s'))
+                ->field('userId', 'username', 'passhash', 'created')
+                ->value()
+                    ->addStr($user->userId)
+                    ->addStr($username)
+                    ->addStr($passhash)
+                    ->addDateTime(new \DateTime())
                 ->execute();
         } catch (\Exception $e) {
-            $this->cnn->rollback();
+            $this->cnn->trans()->rollback();
             throw $e;
         }
-        $this->cnn->commit();
+        $this->cnn->trans()->commit();
     }
 
     public function create(UserDto $user): void
@@ -48,21 +50,24 @@ class UserRepo extends RepoBase
             $user->zcode = $this->cnn->zcode();
         }
 
-        $now = date('Y-m-d H:i:s');
+        //$now = date('Y-m-d H:i:s');
+        $now = new \DateTime();
         $user->created = $now;
         $user->changed = $now;
-        $user->logined = '0000-00-00 00:00:00';
+        $user->logined = new \DateTime('0000-1-1');
 
         $this->assertNotExists($this->userTable, 'userId', $user->userId);
         $this->assertNotExists($this->userTable, 'zcode', $user->zcode);
 
         $this->cnn->insert($this->userTable)
-            ->value('nick', $user->nick)
-            ->value('userId', $user->userId)
-            ->value('zcode', $user->zcode)
-            ->value('created', $user->created)
-            ->value('changed', $user->changed)
-            ->value('logined', $user->logined)
+            ->field('nick', 'userId', 'zcode', 'created', 'changed', 'logined')
+            ->value()
+                ->addStr($user->nick)
+                ->addStr($user->userId)
+                ->addStr($user->zcode)
+                ->addDateTime($user->created)
+                ->addDateTime($user->changed)
+                ->addDateTime($user->logined)
             ->execute();
     }
 
@@ -82,67 +87,71 @@ class UserRepo extends RepoBase
 
     public function fetch(array $query): UserDto
     {
-        $ssb = $this->cnn->select(
-            ['u', 'userId'],
-            ['u', 'nick'],
-            ['u', 'zcode'],
-            ['u', 'avt'],
-            ['u', 'logined'],
-            ['u', 'created'],
-            ['u', 'changed']
-        )->from([$this->userTable, 'u']);
+        $select = $this->cnn->select(
+            'u.userId',
+            'u.nick',
+            'u.zcode',
+            'u.avt',
+            'u.logined',
+            'u.created',
+            'u.changed'
+        )->from($this->userTable . ' u')->where();
 
         if ($userId = $query['userId'] ?? '') {
-            $ssb->andWhere(['u', 'userId'], '=', $userId);
+            return $select
+                ->expect('u.userId')->beStr($userId)
+                ->execute()
+                ->fetch(UserDto::class);
         }
 
         if ($zcode = $query['zcode'] ?? '') {
-            $ssb->andWhere(['u', 'zcode'], '=', $zcode);
+            return $select
+                ->expect('u.zcode')->beStr($zcode)
+                ->execute()
+                ->fetch(UserDto::class);
         }
 
         if ($username = $query['username'] ?? '') {
-            $ssb->leftJoin(
-                [$this->passportTable, 'p'],
-                ['p', 'userId'],
-                '=',
-                ['u', 'userId']
-            );
-            $ssb->andWhere('username', '=', $username);
+            $select->leftJoin($this->passportTable . ' p')
+                ->onCond()
+                    ->expect('p.userId')->beExpr('u.userId')
+                ->where()
+                    ->expect('p.username')->beStr($username)
+                ->execute()
+                ->fetch(UserDto::class);
         }
 
-        if (empty($ssb->getWheres())) {
-            throw new \Exception('query format error');
-        }
-
-        return $ssb->fetch(UserDto::class);
+        throw new \Exception('query format error');
     }
 
     public function delete(string $userId): void
     {
         $this->cnn->delete()
             ->from($this->userTable)
-            ->where('userId', '=', $userId)
+            ->where()
+                ->expect('userId')->beStr($userId)
             ->execute();
     }
 
     public function trackLogin(string $userId): void
     {
-        $now = date('Y-m-d H:i:s');
-
         $this->cnn->update($this->userTable)
-            ->where('userId', '=', $userId)
-            ->set('logined', $now)
+            ->set('logined')->beDateTime(new \DateTime())
+            ->where()
+                ->expect('userId')->beStr($userId)
             ->execute();
     }
 
     protected function assertNotExists($table, $col, $val): void
     {
-        $obj = $this->cnn->select($col)
+        $arr = $this->cnn->select($col)
             ->from($table)
-            ->where($col, '=', $val)
-            ->fetchObj();
+            ->where()
+                ->expect($col)->beStr($val)
+            ->execute()
+            ->fetchAssoc();
 
-        if ($obj) {
+        if ($arr) {
             throw new \Exception("$col '$val' already exists in $table");
         }
     }
