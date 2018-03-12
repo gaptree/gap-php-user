@@ -26,11 +26,13 @@ class UserRepo extends RepoBase
             }
             $this->cnn->insert($this->passportTable)
                 ->field('userId', 'username', 'passhash', 'created')
-                ->value()
-                    ->addStr($user->userId)
-                    ->addStr($username)
-                    ->addStr($passhash)
-                    ->addDateTime(new \DateTime())
+                ->value(
+                    $this->cnn->value()
+                        ->add($this->cnn->str($user->userId))
+                        ->add($this->cnn->str($username))
+                        ->add($this->cnn->str($passhash))
+                        ->add($this->cnn->dateTime(new \DateTime()))
+                )
                 ->execute();
         } catch (\Exception $e) {
             $this->cnn->trans()->rollback();
@@ -61,28 +63,33 @@ class UserRepo extends RepoBase
 
         $this->cnn->insert($this->userTable)
             ->field('nick', 'userId', 'zcode', 'created', 'changed', 'logined')
-            ->value()
-                ->addStr($user->nick)
-                ->addStr($user->userId)
-                ->addStr($user->zcode)
-                ->addDateTime($user->created)
-                ->addDateTime($user->changed)
-                ->addDateTime($user->logined)
+            ->value(
+                $this->cnn->value()
+                    ->add($this->cnn->str($user->nick))
+                    ->add($this->cnn->str($user->userId))
+                    ->add($this->cnn->str($user->zcode))
+                    ->add($this->cnn->dateTime($user->created))
+                    ->add($this->cnn->dateTime($user->changed))
+                    ->add($this->cnn->dateTime($user->logined))
+            )
             ->execute();
     }
 
     public function passhash(string $username): string
     {
         $obj = $this->cnn->select('passhash')
-            ->from($this->passportTable)
-            ->where('username', '=', $username)
-            ->fetchObj();
+            ->from($this->cnn->table($this->passportTable))
+            ->where(
+                $this->cnn->cond()
+                    ->expect('username')->equal($this->cnn->str($username))
+            )
+            ->fetchAssoc();
 
         if (empty($obj)) {
             throw new \Exception('cannot find ' . $username);
         }
 
-        return $obj->passhash;
+        return $obj['passhash'];
     }
 
     public function fetch(array $query): UserDto
@@ -95,29 +102,29 @@ class UserRepo extends RepoBase
             'u.logined',
             'u.created',
             'u.changed'
-        )->from($this->userTable . ' u')->where();
+        );
 
+        $table = $this->cnn->table($this->userTable . ' u');
+        $cond = $this->cnn->cond();
+        
         if ($userId = $query['userId'] ?? '') {
-            return $select
-                ->expect('u.userId')->beStr($userId)
-                ->execute()
+            $cond->expect('u.userId')->equal($this->cnn->str($userId));
+            return $select->from($table)->where($cond)
                 ->fetch(UserDto::class);
-        }
+        } elseif ($zcode = $query['zcode'] ?? '') {
+            $cond->expect('u.zcode')->equal($this->cnn->str($zcode));
 
-        if ($zcode = $query['zcode'] ?? '') {
-            return $select
-                ->expect('u.zcode')->beStr($zcode)
-                ->execute()
+            return $select->from($table)->where($cond)
                 ->fetch(UserDto::class);
-        }
+        } elseif ($username = $query['username'] ?? '') {
+            $table->leftJoin($this->passportTable . ' p')
+                ->onCond(
+                    $this->cnn->cond()
+                        ->expect('p.userId')->equal($this->cnn->str('u.userId'))
+                );
+            $cond->expect('p.username')->equal($this->cnn->str($username));
 
-        if ($username = $query['username'] ?? '') {
-            $select->leftJoin($this->passportTable . ' p')
-                ->onCond()
-                    ->expect('p.userId')->beExpr('u.userId')
-                ->where()
-                    ->expect('p.username')->beStr($username)
-                ->execute()
+            return $select->from($table)->where($cond)
                 ->fetch(UserDto::class);
         }
 
@@ -127,28 +134,33 @@ class UserRepo extends RepoBase
     public function delete(string $userId): void
     {
         $this->cnn->delete()
-            ->from($this->userTable)
-            ->where()
-                ->expect('userId')->beStr($userId)
+            ->from($this->cnn->table($this->userTable))
+            ->where(
+                $this->cnn->cond()
+                    ->expect('userId')->equal($this->cnn->str($userId))
+            )
             ->execute();
     }
 
     public function trackLogin(string $userId): void
     {
-        $this->cnn->update($this->userTable)
-            ->set('logined')->beDateTime(new \DateTime())
-            ->where()
-                ->expect('userId')->beStr($userId)
+        $this->cnn->update($this->cnn->table($this->userTable))
+            ->set('logined', $this->cnn->dateTime(new \DateTime()))
+            ->where(
+                $this->cnn->cond()
+                    ->expect('userId')->equal($this->cnn->str($userId))
+            )
             ->execute();
     }
 
     protected function assertNotExists($table, $col, $val): void
     {
         $arr = $this->cnn->select($col)
-            ->from($table)
-            ->where()
-                ->expect($col)->beStr($val)
-            ->execute()
+            ->from($this->cnn->table($table))
+            ->where(
+                $this->cnn->cond()
+                    ->expect($col)->equal($this->cnn->str($val))
+            )
             ->fetchAssoc();
 
         if ($arr) {
