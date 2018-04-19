@@ -120,7 +120,7 @@ class UserRepo extends RepoBase
             $table->leftJoin($this->passportTable . ' p')
                 ->onCond(
                     $this->cnn->cond()
-                        ->expect('p.userId')->equal($this->cnn->str('u.userId'))
+                        ->expect('p.userId')->equal($this->cnn->expr('u.userId'))
                 );
             $cond->expect('p.username')->equal($this->cnn->str($username));
 
