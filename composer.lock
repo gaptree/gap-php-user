@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5c396142d98a7fd52fc98e5445d7acfa",
+    "content-hash": "71494f8a0a5db4b6a414a1004fdaeb5e",
     "packages": [
         {
             "name": "gap/db",
-            "version": "v1.0.5",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gaptree/gap-php-db.git",
-                "reference": "bda92ed51bbdbfd56937bcabd13bd7b525d32d86"
+                "reference": "63427835db33477621e6b1dc91c18017b0d7b80a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/gaptree/gap-php-db/bda92ed51bbdbfd56937bcabd13bd7b525d32d86.zip",
-                "reference": "bda92ed51bbdbfd56937bcabd13bd7b525d32d86",
+                "url": "https://files.phpcomposer.com/files/gaptree/gap-php-db/63427835db33477621e6b1dc91c18017b0d7b80a.zip",
+                "reference": "63427835db33477621e6b1dc91c18017b0d7b80a",
                 "shasum": ""
             },
             "require": {
@@ -48,7 +48,7 @@
             "keywords": [
                 "gap"
             ],
-            "time": "2018-03-11T13:45:45+00:00"
+            "time": "2018-04-22T11:48:11+00:00"
         },
         {
             "name": "gap/dto",

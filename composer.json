@@ -17,7 +17,7 @@
     "require": {
         "php": ">=7.1.0",
         "gap/dto": "^1.0",
-        "gap/db": "^1.0",
+        "gap/db": "^2.0",
         "gap/open-dto": "^1.0",
         "gap/open-contract": "^1.0"
     },

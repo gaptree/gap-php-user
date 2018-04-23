@@ -1,7 +1,7 @@
 <?php
 namespace Gap\User;
 
-use Gap\Db\DbManagerInterface;
+use Gap\Db\Contract\DbManagerInterface;
 use Gap\User\Repo\UserRepo;
 
 use Gap\Open\Dto\UserDto;
